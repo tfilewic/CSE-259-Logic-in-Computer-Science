@@ -101,10 +101,14 @@ middle(FontSize, LeftRightMargin, SpaceBetweenCharacters):-
 
 /* main  -  exception handling for bad input*/
 asu(LeftRightMargin, BottomTopMargin, SpaceBetweenCharacters, FontSize):-
+    ((\+ integer(LeftRightMargin);          % must be an integer
+    \+ integer(BottomTopMargin);            % must be an integer
+    \+ integer(SpaceBetweenCharacters);     % must be an integer
+    \+ integer(FontSize));                  % must be an integer
     (LeftRightMargin < 0;  			% left/right margins can not be negative
     BottomTopMargin < 0;			% top/bottom margins can not be negative
     SpaceBetweenCharacters < 0;		% character spacing can not be negative
-    FontSize < 1),					% font size must be at least 1
+    FontSize < 1)),					% font size must be at least 1
     write('invalid parameters'), 	% error message
     !.								% cut
 
