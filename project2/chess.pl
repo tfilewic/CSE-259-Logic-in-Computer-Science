@@ -357,6 +357,90 @@ report_move(Color, Board, From_File-From_Rank, To_File-To_Rank, Rating) :-
 % ------------------------------------------------------------------------------
 % YOUR CODE STARTS HERE
 
+/* key/value pairs for printing */
+pair(1,a).
+pair(2,b).
+pair(3,c).
+pair(4,d).
+pair(5,e).
+pair(6,f).
+pair(7,g).
+pair(8,h).
+pair(rook,r).
+pair(bishop,b).
+pair(king,k).
+pair(pawn,p).
+pair(queen,q).
+pair(night,n).
+
+drawBorder(N) :-
+    ((N = 8,
+	write(' '));
+	(N < 8)),
+	write('+'),
+    (N < 1,
+        nl,
+		!); 
+    (N >= 1,
+        write('----'),
+        drawBorder(N - 1)).
+
+drawRows(R) :-
+    R < 0, ! ;
+	drawBorder(8),
+    (drawSquares(R, 0),
+        R1 is R - 1,
+        drawRows(R1)).
+
+
+
+
+drawSquares(R, 0) :-
+    R > 0,
+    write(R),
+    write('|'),
+    drawSquares(R, 1),
+    !.
+
+drawSquares(_, 9) :-
+    nl,
+    !.
+
+drawSquares(R, F) :-
+    R > 0,
+    F < 9,
+    write(' '),
+    pair(F, File),
+    write(File),
+    Rank is R,
+    write(R),
+    write(' '),
+    /*          
+     * 				TODO write pieces 
+     * 
+     */
+    write('|'),
+
+    F1 is F + 1,
+    drawSquares(R, F1).
+
+drawSquares(0, F) :-
+    (F > 8,
+        !);
+    F1 is F + 1,
+    (   (F < 1,
+        write('  '));
+    (F >= 1,
+        F =< 8,
+        write('  '),
+        pair(F, Letter),
+        write(Letter),
+        write('  '))),
+    drawSquares(0, F1),
+    !.
+
+
+
 % TASK 1: REPLACE THE print_board PREDICATE BELOW WITH YOUR CODE
 print_board(Board) :-
     write(Board), nl.
