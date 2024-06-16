@@ -356,8 +356,12 @@ report_move(Color, Board, From_File-From_Rank, To_File-To_Rank, Rating) :-
 
 % ------------------------------------------------------------------------------
 % YOUR CODE STARTS HERE
+/*
+*		Tyler Filewich  tfilewic
+*		CSE 259  Project 2  Task 1
+*/ 
 
-/* key/value pairs for printing letters*/
+/* key/value pairs for printing*/
 pair(1, a).
 pair(2, b).
 pair(3, c).
@@ -376,71 +380,74 @@ pair(black, *).
 pair(white, ' ').
 
 /* Draws the edges of the board and squares */
-drawBorder(N) :-
-    ((N = 8,
-	write(' '));
-	(N < 8)),
+drawBorder :-				% no argument predicate to start from the left side
+	drawBorder(0).
+
+drawBorder(N) :-			
+    ((N = 0,				
+		write(' '));			% pad left margin
+	(N > 0)),
 	write('+'),
-    (N < 1,
-        nl,
+    ((N = 8,					% base case, beyond right edge of board
+		nl,
 		!); 
-    (N >= 1,
-        write('----'),
-        drawBorder(N - 1)).
+   	(N < 8,
+		write('----'),
+		N1 is N + 1,
+		drawBorder(N1))).		% recursive call, next edge to the right
 
 
+
+/* Draws all rows of the chess board*/
 drawRows(R, Board) :-
-    R < 0, ! ;
-	drawBorder(8),
-    (drawSquares(0, R, Board),
+    R < 0, ! ;						% base case, below the bottom
+	drawBorder,						% draw the edge
+    (drawSquares(0, R, Board),		% fill the squares
         R1 is R - 1,
-        drawRows(R1, Board)).
+        drawRows(R1, Board)).		% recursive call, next row down
 
 
-
-
-drawSquares(0, R, Board) :-
+/* Draws the squares and pieces for a single row of the chess board*/
+drawSquares(0, R, Board) :-		% left edge of the board, labels the ranks
     R > 0,
     write(R),
     write('|'),
     drawSquares(1, R, Board),
     !.
 
-drawSquares(9, _, _) :-
+drawSquares(9, _, _) :-			% base case, beyond the right edge of the board
     nl,
     !.
 
-drawSquares(F, R, Board) :-
+drawSquares(F, R, Board) :-		% middle rows, draws the squares and pieces
     F < 9,
 	R > 0,
     write(' '),
-    pair(F, File),
-    Rank is R,
 
-	((mymember(piece(File-Rank, C, P), Board),
+    pair(F, File),			% File letter
+    Rank is R,				% Rank number
+
+	((mymember(piece(File-Rank, C, P), Board),		% this square contains a piece
 		pair(C, Color),
 		pair(P, Piece),
 		write(Color),
 		write(Piece));
-	(\+ mymember(piece(File-Rank, _, _), Board),
+	(\+ mymember(piece(File-Rank, _, _), Board), 	% this square is empty
 		write('  '))),
 
     write(' |'),
-
     F1 is F + 1,
-    drawSquares(F1, R, Board).
+    drawSquares(F1, R, Board). 						% recurse call for the next square to the right
 
-drawSquares(F, 0, Board) :-
-    (F > 8,
-        !);
+drawSquares(F, 0, Board) :-				% bottom row, labels the files
     F1 is F + 1,
-    (   (F < 1,
+    ((F < 1,							% left margin
         write('  '));
     (F >= 1,
         F =< 8,
         write('  '),
-        pair(F, Letter),
-        write(Letter),
+        pair(F, File),					% File letter
+        write(File),
         write('  '))),
     drawSquares(F1, 0, Board),
     !.
@@ -449,7 +456,7 @@ drawSquares(F, 0, Board) :-
 
 % TASK 1: REPLACE THE print_board PREDICATE BELOW WITH YOUR CODE
 print_board(Board) :-
-    drawRows(8, Board), nl.
+    drawRows(8, Board).
 
 % ------------------------------------------------------------------------------
 % YOUR CODE ENDS HERE
