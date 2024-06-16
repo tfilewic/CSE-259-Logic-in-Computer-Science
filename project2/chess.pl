@@ -357,22 +357,25 @@ report_move(Color, Board, From_File-From_Rank, To_File-To_Rank, Rating) :-
 % ------------------------------------------------------------------------------
 % YOUR CODE STARTS HERE
 
-/* key/value pairs for printing */
-pair(1,a).
-pair(2,b).
-pair(3,c).
-pair(4,d).
-pair(5,e).
-pair(6,f).
-pair(7,g).
-pair(8,h).
-pair(rook,r).
-pair(bishop,b).
-pair(king,k).
-pair(pawn,p).
-pair(queen,q).
-pair(night,n).
+/* key/value pairs for printing letters*/
+pair(1, a).
+pair(2, b).
+pair(3, c).
+pair(4, d).
+pair(5, e).
+pair(6, f).
+pair(7, g).
+pair(8, h).
+pair(rook, r).
+pair(bishop, b).
+pair(king, k).
+pair(pawn, p).
+pair(queen, q).
+pair(night, n).  % nice spelling, bud
+pair(black, *).
+pair(white, ' ').
 
+/* Draws the edges of the board and squares */
 drawBorder(N) :-
     ((N = 8,
 	write(' '));
@@ -385,46 +388,49 @@ drawBorder(N) :-
         write('----'),
         drawBorder(N - 1)).
 
-drawRows(R) :-
+
+drawRows(R, Board) :-
     R < 0, ! ;
 	drawBorder(8),
-    (drawSquares(R, 0),
+    (drawSquares(0, R, Board),
         R1 is R - 1,
-        drawRows(R1)).
+        drawRows(R1, Board)).
 
 
 
 
-drawSquares(R, 0) :-
+drawSquares(0, R, Board) :-
     R > 0,
     write(R),
     write('|'),
-    drawSquares(R, 1),
+    drawSquares(1, R, Board),
     !.
 
-drawSquares(_, 9) :-
+drawSquares(9, _, _) :-
     nl,
     !.
 
-drawSquares(R, F) :-
-    R > 0,
+drawSquares(F, R, Board) :-
     F < 9,
+	R > 0,
     write(' '),
     pair(F, File),
-    write(File),
     Rank is R,
-    write(R),
-    write(' '),
-    /*          
-     * 				TODO write pieces 
-     * 
-     */
-    write('|'),
+
+	((mymember(piece(File-Rank, C, P), Board),
+		pair(C, Color),
+		pair(P, Piece),
+		write(Color),
+		write(Piece));
+	(\+ mymember(piece(File-Rank, _, _), Board),
+		write('  '))),
+
+    write(' |'),
 
     F1 is F + 1,
-    drawSquares(R, F1).
+    drawSquares(F1, R, Board).
 
-drawSquares(0, F) :-
+drawSquares(F, 0, Board) :-
     (F > 8,
         !);
     F1 is F + 1,
@@ -436,14 +442,14 @@ drawSquares(0, F) :-
         pair(F, Letter),
         write(Letter),
         write('  '))),
-    drawSquares(0, F1),
+    drawSquares(F1, 0, Board),
     !.
 
 
 
 % TASK 1: REPLACE THE print_board PREDICATE BELOW WITH YOUR CODE
 print_board(Board) :-
-    write(Board), nl.
+    drawRows(8, Board), nl.
 
 % ------------------------------------------------------------------------------
 % YOUR CODE ENDS HERE
