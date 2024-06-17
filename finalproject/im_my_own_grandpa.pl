@@ -1,25 +1,51 @@
+/*
+*   "I am my own grandpa"
+*   Tyler Filewich  tfilewic
+*   CSE259 Final Project
+*/
+
+
+
 
  /* Oh, many, many years ago
     When I was twenty-three
     I was married to a widow
     Who was pretty as can be
     */
+
 male(me).
+male(myfather).
+male(bouncingbaby).
+male(son).
+
 female(widow).
+female(redhair).
+
 married(me, widow).
 married(widow, me).
 
+married(myfather, redhair).
+married(redhair, myfather).
+
+
+daughter_of(redhair, widow).
+
+
+son_of(me, myfather).
+
+son_of(bouncingbaby, me).
+son_of(bouncingbaby, widow).
+
+son_of(son, redhair).
+son_of(son, myfather).
+
 /*  This widow had a grown-up daughter
     Who had hair of red */
-female(redhair).
-daughter_of(redhair, widow).
+
+
 
 /*    My father fell in love with her
     And soon the two were wed */
-male(myfather).
-son_of(me, myfather).
-married(myfather, redhair).
-married(redhair, myfather).
 
 
 /*	This made my dad my son-in-law
@@ -49,9 +75,8 @@ mother_of(M, C) :-
     Though it really brought me joy
     I soon became the father
     Of a bouncing baby boy */
-male(bouncingbaby).
-son_of(bouncingbaby, me).
-son_of(bouncingbaby, widow).
+
+
 
 /* 	This little baby then became
     A brother-in-law to Dad*/
@@ -62,9 +87,9 @@ siblings(C1, C2):-
 brother_in_law(B, P) :-
     male(B),
     (siblings(B, W),
-    	married(P, W));
-    (siblings(P, S),
-        married(B, W)).
+    	married(P, W)); % P's wife's brother
+    (siblings(P, W),
+        married(B, W)).	% P's sister's husband
 
 /*	And so became my uncle
     Though it made me very sad
@@ -104,11 +129,10 @@ grandfather_of(G, C):-
     
 /*	My father's wife then had a son
     Who kept them on the run */
-son_of(son, redhair).
-son_of(son, myfather).
+
 
 /*  And he became my grandchild
-    For he was my daughter's son */               %do i need to test daughter's son?
+    For he was my daughter's son */  
 grandchild_of(C, G) :-
     parent_of(P, C),
     parent_of(G, P).
@@ -136,23 +160,14 @@ grandmother_of(G, C):-
     */
 
 test :-
-    %This made my dad my son-in-law
-    son_in_law(me, myfather),
-    %my daughter was my mother
-    mother_of(redhair, me),
-    %This little baby then became a brother-in-law to Dad
-    brother_in_law(myfather, bouncingbaby),
-	% And so became my uncle
-    uncle_of(bouncingbaby, me),
-    % that also made him brother Of the widow's grown-up daughter
-    brother(bouncingbaby, redhair),
-    % Wh of course is my step-mother
-    stepmother_of(redhair, me),
-    % Im my own grandpa
-    grandfather_of(me, me),
-    % And he became my grandchild
-    grandchild_of(son, me).
-	% Because although she is my wife She's my grandmother too 
-	grandmother_of(widow, me),
-    !.
+    son_in_law(me, myfather),                   % This made my dad my son-in-law
+    mother_of(redhair, me),                     % my daughter was my mother
+    brother_in_law(myfather, bouncingbaby),     % This little baby then became a brother-in-law to Dad
+    uncle_of(bouncingbaby, me),                 %   And so became my uncle
+    brother(bouncingbaby, redhair),             %   that also made him brother Of the widow's grown-up daughter
+    stepmother_of(redhair, me),                 %       Who of course is my step-mother
+    grandfather_of(me, me),                     % Im my own grandpa
+    grandchild_of(son, me),                     % My father's wife then had a son... And he became my grandchild
+	grandmother_of(widow, me),                  % Because although she is my wife She's my grandmother too 
+    !.  
     
