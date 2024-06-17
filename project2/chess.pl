@@ -58,20 +58,14 @@ main.
 
 % TASK 3: MODIFY THE CODE BELOW TO MAKE playerA and playerB auto-compete.
 play(Board) :-
-    execute_command(playerA, Board, NewBoard),
-    execute_command(playerB, NewBoard, NextNewBoard),
+    execute_command(playerA, Board, NewBoard),			% white turn
+    execute_command(playerB, NewBoard, NextNewBoard),	% black turn
     play(NextNewBoard).
 
-get_command(Command) :-
-    nl, write('white move -> '),
-    read(Command), !.
 
-execute_command(Move, Board, NewBoard) :-
-         parse_move(Move, From, To),
-         move(Board, From, To, white, Piece),
-         make_move(Board, From, To, NewBoard), !.
 execute_command(Player, Board, NewBoard) :-
     respond_to(Player, Board, NewBoard), !.
+
 execute_command(X, Board, _) :-     % Use to catch unexpected situations
     write('What?'),
     halt(0).
@@ -97,6 +91,7 @@ Rand is Number.               % Add random value to avoid deadlock
 % +++++++++++++++++++++++++++++++++ playerA Code +++++++++++++++++++++++++++++++
 
 % TASK 2: IMPLEMENT playerA CODE HERE
+
 strengthA([state(_, _, _, _)|Board], Color, OppositeColor, Strength) :-
     strengthA(Board, Color, OppositeColor, Strength), !.
 strengthA([piece(_, Color, Type)|Board], Color, OppositeColor, Strength) :-
@@ -115,16 +110,16 @@ ply_depthA(2).          % Depth of alpha-beta search
 % MAKE SURE that the SUM of all pieces is smaller than 32000
 
 valueA(king, 10000) :- ! .
-valueA(queen,  900) :- ! .
-valueA(rook,   500) :- ! .
-valueA(night,  300) :- ! .
+valueA(queen, 2000) :- ! .
+valueA(rook,   600) :- ! .
+valueA(night,  400) :- ! .
 valueA(bishop, 300) :- ! .
 valueA(pawn,   100) :- ! .
 
 % PlayerB book moves, black
 bookA( [ state(black, BlackKing, BlackKingRook, BlackQueenRook),
        state(white, WhiteKing, WhiteKingRook, WhiteQueenRook), % respond with
-    piece(a-8, black, rook  ), piece(b-8, black, night ), 	% ...   e7e5
+    piece(a-8, black, rook  ), piece(b-8, black, night ),
     piece(c-8, black, bishop), piece(d-8, black, queen ),
     piece(e-8, black, king  ), piece(f-8, black, bishop),
     piece(g-8, black, night ), piece(h-8, black, rook  ),
@@ -139,10 +134,10 @@ bookA( [ state(black, BlackKing, BlackKingRook, BlackQueenRook),
     piece(a-2, white, pawn  ), piece(b-2, white, pawn  ),
     piece(c-2, white, pawn  ), piece(d-2, white, pawn  ),
     piece(f-2, white, pawn  ), piece(g-2, white, pawn  ),
-    piece(h-2, white, pawn  ), piece(e-4, white, pawn  ) ], c-2, c-4).
+    piece(h-2, white, pawn  ), piece(e-4, white, pawn  ) ], d-2, d-4).
 
 % Code for alpha beta prunning
-% Player is playerB, Turn is the player whose turn is to play
+% Player is playerA, Turn is the player whose turn is to play
 sufficientA(Player, Board, Turn, [], Depth, Alpha, Beta, Move, Val, Move, Val) :- !.
 sufficientA(Player, Board, Turn, Moves, Depth, Alpha, Beta, Move, Val, Move, Val) :-
     Player \== Turn,        % It is the opponent turn to play, MIN node at Turn
