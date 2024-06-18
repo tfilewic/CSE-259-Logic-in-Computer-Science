@@ -4,6 +4,9 @@
 *   CSE259 Final Project
 */
 
+
+/*  FACTS  */
+
 male(me).               % narrator
 male(myfather).         % the narrator's father
 male(bouncingbaby).     % the narrator and widow's baby boy
@@ -12,13 +15,13 @@ male(son).              % the father and redhair's son
 female(widow).          % the widow
 female(redhair).        % the widow's grown-up daughter
 
-daughter_of(redhair, widow).    % This widow had a grown-up daughter Who had hair of red
+daughter(redhair, widow).    % This widow had a grown-up daughter Who had hair of red
 
-son_of(me, myfather).           % My father
+son(me, myfather).           % My father
 
-son_of(bouncingbaby, me).       % I soon became the father Of a bouncing baby boy
+son(bouncingbaby, me).       % I soon became the father Of a bouncing baby boy
 
-son_of(son, redhair).           % My father's wife then had a son
+son(son, redhair).           % My father's wife then had a son
 
 
 married(me, widow).         % I was married to a widow Who was pretty as can be
@@ -29,16 +32,23 @@ married(redhair, myfather).
 
 
 
-parent_of(P, C) :-
-    daughter_of(C, P);			% daughter
-    son_of(C, P);				% son
-    married(P, P2),					
-    	(daughter_of(C, P2);	% stepdaughter
-    	son_of(C, P2)).			% stepson
+/*  RULES  */
 
-son_in_law(F, S) :- 
+parent_of(P, C) :-
+    daughter(C, P);			% daughter
+    son(C, P);				% son
+    married(P, P2),					
+    	(daughter(C, P2);	% stepdaughter
+    	son(C, P2)).	    % stepson
+
+son_in_law(S, F) :- 
+    male(S),
     parent_of(F, D),
     married(S, D).
+
+daughter_of(D, P) :-
+    female(D),
+    parent_of(P, D).
 
 mother_of(M, C) :-
     female(M),
@@ -48,27 +58,27 @@ siblings(C1, C2):-
     parent_of(P, C1),
     parent_of(P, C2).
 
-brother_in_law(B, P) :-
+brother_in_law_of(B, P) :-
     male(B),
     (siblings(B, W),
-    	married(P, W)); % P's wife's brother
+    	married(P, W));     % wife's brother
     (siblings(P, W),
-        married(B, W)).	% P's sister's husband
+        married(B, W)).	    % sister's husband
 
 uncle_of(U, N) :-
     male(U),
     parent_of(P, N),
     siblings(P, U).
 
-brother(B, S) :-
+brother_of(B, S) :-
     male(B),
     siblings(B, S).
 
 stepmother_of(M, C) :-
     female(M),
     married(M, F),
-    (daughter_of(C, F);
-    	son_of(C, F)).
+    (daughter(C, F);
+    	son(C, F)).
 
 grandfather_of(G, C):-
     male(G),
@@ -85,13 +95,17 @@ grandmother_of(G, C):-
     parent_of(P, C).
 
 
+
+/*  QUERIES  */
+
 test :-
-    son_in_law(me, myfather),                   % This made my dad my son-in-law
-    mother_of(redhair, me),                     % my daughter was my mother
-    brother_in_law(myfather, bouncingbaby),     % This little baby then became a brother-in-law to Dad
+    son_in_law(myfather, me),                   % This made my dad my son-in-law
+    daughter_of(redhair, me),                   % For my daughter 
+    mother_of(redhair, me),                     %       was my mother 
+    brother_in_law_of(myfather, bouncingbaby),  % This little baby then became a brother-in-law to Dad
     uncle_of(bouncingbaby, me),                 %   And so became my uncle
-    brother(bouncingbaby, redhair),             %   that also made him brother Of the widow's grown-up daughter
-    stepmother_of(redhair, me),                 %       Who of course is my step-mother
+    brother_of(bouncingbaby, redhair),          %       that also made him brother Of the widow's grown-up daughter
+    stepmother_of(redhair, me),                 %           Who of course is my step-mother
     grandfather_of(me, me),                     % Im my own grandpa
     grandchild_of(son, me),                     % My father's wife then had a son... And he became my grandchild
 	grandmother_of(widow, me),                  % Because although she is my wife She's my grandmother too 
