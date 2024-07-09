@@ -68,7 +68,9 @@ brother_in_law_of(B, P) :-
 uncle_of(U, N) :-
     male(U),
     parent_of(P, N),
-    siblings(P, U).
+    (siblings(P, U);		% a parent's brother
+	siblings(P, A),			% a parent's brother-in-law
+	married(A, U)).
 
 brother_of(B, S) :-
     male(B),
@@ -94,15 +96,17 @@ grandmother_of(G, C):-
     parent_of(G, P),
     parent_of(P, C).
 
-
+great_great_grandfather_of(G, C):-
+	grandfather_of(G, M),
+	grandchild_of(C, M).
 
 /*  QUERIES  */
 
-test :-
+test :-											% proves the relationships described in the song
     son_in_law(myfather, me),                   % This made my dad my son-in-law
     daughter_of(redhair, me),                   % For my daughter 
     mother_of(redhair, me),                     %       was my mother 
-    brother_in_law_of(myfather, bouncingbaby),  % This little baby then became a brother-in-law to Dad
+    brother_in_law_of(bouncingbaby, myfather),  % This little baby then became a brother-in-law to Dad
     uncle_of(bouncingbaby, me),                 %   And so became my uncle
     brother_of(bouncingbaby, redhair),          %       that also made him brother Of the widow's grown-up daughter
     stepmother_of(redhair, me),                 %           Who of course is my step-mother
@@ -111,3 +115,10 @@ test :-
 	grandmother_of(widow, me),                  % Because although she is my wife She's my grandmother too 
     !.  
     
+
+test2:-											% proves supplementary relationships not described in the song									
+	great_great_grandfather_of(me, me),			% I am my own great-great-grandfather
+	brother_of(me, son),						% my daughter's son is my brother
+	grandchild_of(bouncingbaby, redhair),		% my son is my daughter's grandchild
+	siblings(bouncingbaby, redhair),			% my son and my mother in law are siblings
+	!.
